@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forest Fire Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .prediction-form {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .form-label {
+            font-weight: 500;
+        }
+        .parameter-group {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header text-center">
+        <h1>Forest Fire Prediction System</h1>
+        <p class="lead">Predict forest fire risk using advanced machine learning</p>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="prediction-form">
+                    <form action="/predict" method="post">
+                        <div class="parameter-group">
+                            <h4 class="mb-3">Weather Parameters</h4>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="temperature" class="form-label">Temperature (°C)</label>
+                                    <input type="number" step="0.01" class="form-control" id="temperature" name="temperature" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="RH" class="form-label">Relative Humidity (%)</label>
+                                    <input type="number" step="0.01" class="form-control" id="RH" name="RH" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="Ws" class="form-label">Wind Speed (km/h)</label>
+                                    <input type="number" step="0.01" class="form-control" id="Ws" name="Ws" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="Rain" class="form-label">Rain (mm)</label>
+                                    <input type="number" step="0.01" class="form-control" id="Rain" name="Rain" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="parameter-group">
+                            <h4 class="mb-3">Fire Weather Index Components</h4>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="FFMC" class="form-label">FFMC (Fine Fuel Moisture Code)</label>
+                                    <input type="number" step="0.01" class="form-control" id="FFMC" name="FFMC" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="DMC" class="form-label">DMC (Duff Moisture Code)</label>
+                                    <input type="number" step="0.01" class="form-control" id="DMC" name="DMC" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="DC" class="form-label">DC (Drought Code)</label>
+                                    <input type="number" step="0.01" class="form-control" id="DC" name="DC" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="parameter-group">
+                            <h4 class="mb-3">Fire Behavior Indexes</h4>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="ISI" class="form-label">ISI (Initial Spread Index)</label>
+                                    <input type="number" step="0.01" class="form-control" id="ISI" name="ISI" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="BUI" class="form-label">BUI (Buildup Index)</label>
+                                    <input type="number" step="0.01" class="form-control" id="BUI" name="BUI" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="parameter-group">
+                            <h4 class="mb-3">Region</h4>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <select class="form-select" id="Region" name="Region" required>
+                                        <option value="" selected disabled>Select Region</option>
+                                        <option value="bejaia">Bejaia</option>
+                                        <option value="sidi-bel-abbes">Sidi-Bel-Abbes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Calculate FWI</button>
+                        </div>
+                    </form>
+
+                    {% if error is defined %}
+                    <div class="mt-4">
+                        <div class="alert alert-warning text-center">
+                            <h4 class="alert-heading">Error</h4>
+                            <p class="mb-0">{{ error }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if prediction is defined and error is not defined %}
+                    <div class="mt-4">
+                        <div class="alert {% if prediction == 1 %}alert-danger{% else %}alert-success{% endif %} text-center">
+                            <h4 class="alert-heading">Fire Risk Prediction</h4>
+                            <p class="display-4 mb-3">
+                                {% if prediction == 1 %}
+                                    High Risk
+                                {% else %}
+                                    Low Risk
+                                {% endif %}
+                            </p>
+                            <p class="mb-0">
+                                {% if prediction == 1 %}
+                                    Warning: High risk of forest fire detected. Please take necessary precautions and alert local authorities.
+                                {% else %}
+                                    The conditions are currently favorable with low fire risk.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center mt-5 mb-3">
+        <p>© 2024 Forest Fire Prediction System - Algerian Forest Fires Dataset</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
